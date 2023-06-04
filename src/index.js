@@ -1,5 +1,6 @@
 import React from "react";
 import { createRoot } from 'react-dom/client';
+import {HashRouter} from 'react-router-dom'
 import TaskList from "./components/TaskList/TaskList";
 import NewTaskForm from "./components/NewTaskForm/NewTaskForm";
 import './style.css'
@@ -20,4 +21,8 @@ const TodoApp = ()=>{
     )
 }
 
-root.render(<TodoApp />);
+root.render(<React.StrictMode>
+    <HashRouter>
+        <TodoApp />
+    </HashRouter>
+</React.StrictMode>);
