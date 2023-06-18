@@ -19,7 +19,8 @@ export default class Task extends React.Component {
     this.setState({ editing: false });
   }
   render() {
-    const { id, label, onDeleted, onToggleDone, done, date } = this.props;
+    const { id, label, done, date } = this.props.todo;
+    const { onDeleted, onToggleDone } = this.props;
     return (
       <li
         key={id}
@@ -27,12 +28,15 @@ export default class Task extends React.Component {
       >
         <div className={"view"}>
           <input
+            id={`${id}`}
             className="toggle"
             type="checkbox"
-            checked={done}
+            // checked={done}
+            onClick={onToggleDone}
+            onKeyDown={onToggleDone}
             readOnly
           ></input>
-          <label onClick={onToggleDone}>
+          <label htmlFor={`${id}`}>
             <span className="description ">{label}</span>
             <span className="created">
               {`created ${formatDistanceToNow(date, {
