@@ -11,7 +11,7 @@ module.exports = {
     "plugin:import/recommended",
     "plugin:jsx-a11y/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
   ],
   overrides: [
     {
@@ -32,8 +32,8 @@ module.exports = {
       babelrc: false,
       configFile: false,
       presets: ["@babel/preset-env"],
-      plugins: ["@babel/plugin-syntax-jsx"]
-    }
+      plugins: ["@babel/plugin-syntax-jsx"],
+    },
   },
   plugins: ["react", "import", "jsx-a11y", "react-hooks"],
   rules: {},

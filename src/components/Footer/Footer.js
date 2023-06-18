@@ -21,6 +21,7 @@ Footer.propTypes = {
   clearCompleted: PropTypes.func.isRequired,
   changeFilter: PropTypes.func.isRequired,
   filter: PropTypes.string,
+  done: PropTypes.bool,
 };
 
 Footer.defaultProps = {

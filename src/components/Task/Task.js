@@ -74,8 +74,13 @@ Task.propTypes = {
     done: PropTypes.bool,
     date: PropTypes.instanceOf(Date),
   }),
+  id: PropTypes.number,
+  label: PropTypes.string,
+  done: PropTypes.bool,
+  date: PropTypes.instanceOf(Date),
   onDeleted: PropTypes.func.isRequired,
   onToggleDone: PropTypes.func.isRequired,
+  editItem: PropTypes.func.isRequired,
 };
 
 Task.defaultProps = {
