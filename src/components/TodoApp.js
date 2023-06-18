@@ -16,7 +16,6 @@ export default class TodoApp extends React.Component {
       done: false,
       id: this.maxId++,
       date: new Date(),
-      //all, active, done
     };
   }
   deleteItem = (id) => {

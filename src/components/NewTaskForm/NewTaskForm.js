@@ -20,12 +20,10 @@ export default class NewTaskForm extends React.Component {
     return (
       <header className="header">
         <h1>todos</h1>
-        {/*<button onClick={() =>this.props.newItemAdded('hello world')}>Add Item</button>*/}
         <form onSubmit={this.onSubmit}>
           <input
             className="new-todo"
             placeholder="What needs to be done?"
-            // autoFocus
             onChange={this.onLabelChange}
             value={this.state.label}
           ></input>

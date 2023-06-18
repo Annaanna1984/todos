@@ -2,12 +2,12 @@ import React from "react";
 import { formatDistanceToNow } from "date-fns";
 import KG from "date-fns/locale/en-AU";
 import PropTypes from "prop-types";
+
 export default class Task extends React.Component {
   state = {
     editing: false,
     value: "",
   };
-
   handleSubmit(event) {
     event.preventDefault();
     const {
@@ -31,7 +31,6 @@ export default class Task extends React.Component {
             id={`${id}`}
             className="toggle"
             type="checkbox"
-            // checked={done}
             onClick={onToggleDone}
             onKeyDown={onToggleDone}
             readOnly
