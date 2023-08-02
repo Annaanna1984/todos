@@ -6,7 +6,10 @@ import PropTypes from "prop-types";
 export default class Task extends React.Component {
   state = {
     editing: false,
+    min: this.props.todo.min,
+    sec: this.props.todo.sec,
     value: "",
+    timerId: "",
   };
   handleSubmit(event) {
     event.preventDefault();
@@ -18,6 +21,12 @@ export default class Task extends React.Component {
     this.setState({ value: "" });
     this.setState({ editing: false });
   }
+
+  stopTimer() {
+    clearInterval(this.state.timerId);
+    this.setState(() => ({ timerId: "" }));
+  }
+
   render() {
     const { id, label, done, date } = this.props.todo;
     const { onDeleted, onToggleDone } = this.props;
@@ -32,12 +41,63 @@ export default class Task extends React.Component {
             className="toggle"
             type="checkbox"
             onClick={onToggleDone}
-            onKeyDown={onToggleDone}
             readOnly
           ></input>
           <label htmlFor={`${id}`}>
-            <span className="description ">{label}</span>
-            <span className="created">
+            <span className="title ">{label}</span>
+            <span className="description">
+              <button
+                className="icon icon-play"
+                onClick={() => {
+                  if (this.props.todo.done || this.state.timerId) return;
+
+                  const timer = setInterval(() => {
+                    if (this.props.todo.done) {
+                      this.stopTimer();
+                      return;
+                    }
+
+                    const secMinusOne = this.state.sec - 1;
+                    const minMinusOne = this.state.min - 1;
+
+                    let newSec =
+                      secMinusOne < 10 && secMinusOne >= 0
+                        ? `0${secMinusOne}`
+                        : secMinusOne;
+
+                    if (newSec < 0 && this.state.min > 0) newSec = 59;
+
+                    if (this.state.min == 0 && newSec < 0) {
+                      this.stopTimer();
+                      return;
+                    }
+
+                    let newMin =
+                      newSec === 59
+                        ? minMinusOne < 10 && minMinusOne >= 0
+                          ? `0${minMinusOne}`
+                          : minMinusOne
+                        : this.state.min;
+
+                    this.setState(() => ({
+                      sec: newSec,
+                      min: newMin,
+                    }));
+                  }, 1000);
+                  this.setState(() => ({ timerId: timer }));
+                }}
+              ></button>
+              <button
+                className="icon icon-pause"
+                onClick={() => {
+                  if (!this.props.todo.done) {
+                    this.stopTimer();
+                  }
+                }}
+              ></button>
+              <span className="new-todo-form__timer">{`${this.state.min}:${this.state.sec}`}</span>
+            </span>
+            <span className="description">
               {`created ${formatDistanceToNow(date, {
                 includeSeconds: true,
                 locale: KG,
@@ -74,6 +134,8 @@ Task.propTypes = {
   todo: PropTypes.shape({
     id: PropTypes.number,
     label: PropTypes.string,
+    min: PropTypes.string,
+    sec: PropTypes.string,
     done: PropTypes.bool,
     date: PropTypes.instanceOf(Date),
   }),

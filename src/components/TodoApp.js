@@ -9,9 +9,11 @@ export default class TodoApp extends React.Component {
     todoData: [],
     filter: "All",
   };
-  createTodoItem(label) {
+  createTodoItem(label, min, sec) {
     return {
       label,
+      min,
+      sec,
       important: false,
       done: false,
       id: this.maxId++,
@@ -27,8 +29,8 @@ export default class TodoApp extends React.Component {
       };
     });
   };
-  addItem = (text) => {
-    const newItem = this.createTodoItem(text);
+  addItem = (text, min, sec) => {
+    const newItem = this.createTodoItem(text, min, sec);
     this.setState(({ todoData }) => {
       const newArr = [...todoData, newItem];
       return {
