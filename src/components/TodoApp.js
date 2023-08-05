@@ -14,12 +14,16 @@ export default class TodoApp extends React.Component {
       label,
       min,
       sec,
+      minValue: min,
+      secValue: sec,
       important: false,
       done: false,
       id: this.maxId++,
       date: new Date(),
+      timerId: 0,
     };
   }
+
   deleteItem = (id) => {
     this.setState(({ todoData }) => {
       const idx = todoData.findIndex((el) => el.id === id);
@@ -29,6 +33,7 @@ export default class TodoApp extends React.Component {
       };
     });
   };
+
   addItem = (text, min, sec) => {
     const newItem = this.createTodoItem(text, min, sec);
     this.setState(({ todoData }) => {
@@ -38,6 +43,7 @@ export default class TodoApp extends React.Component {
       };
     });
   };
+
   toggleProperty(arr, id, propName) {
     const idx = arr.findIndex((el) => el.id === id);
     const oldItem = arr[idx];
@@ -47,6 +53,7 @@ export default class TodoApp extends React.Component {
     const ret = [...before, newItem, ...after];
     return ret;
   }
+
   onToggleDone = (id) => {
     this.setState(({ todoData }) => {
       return {
@@ -54,6 +61,7 @@ export default class TodoApp extends React.Component {
       };
     });
   };
+
   editItem(id, text) {
     this.setState(({ todoData }) => ({
       todoData: todoData.map((element) => {
@@ -62,6 +70,60 @@ export default class TodoApp extends React.Component {
       }),
     }));
   }
+
+  stopTimer(id, timerId) {
+    clearInterval(timerId);
+    this.setState(({ todoData }) => ({
+      todoData: todoData.map((element) => {
+        if (element.id === id) element.timerId = 0;
+        return element;
+      }),
+    }));
+  }
+
+  tickTimer(id) {
+    const timerId = setInterval(() => {
+      this.setState(({ todoData }) => ({
+        todoData: todoData.map((element) => {
+          if (element.id === id) {
+            if (element.done) {
+              this.stopTimer(id, timerId);
+              return element;
+            }
+
+            const secMinusOne = element.secValue - 1;
+            const minMinusOne = element.minValue - 1;
+
+            let newSec =
+              secMinusOne < 10 && secMinusOne >= 0
+                ? `0${secMinusOne}`
+                : secMinusOne;
+
+            if (newSec < 0 && element.minValue > 0) newSec = 59;
+
+            if (element.minValue == 0 && newSec < 0) {
+              this.stopTimer(id, timerId);
+              return element;
+            }
+
+            let newMin =
+              newSec === 59
+                ? minMinusOne < 10 && minMinusOne >= 0
+                  ? `0${minMinusOne}`
+                  : minMinusOne
+                : element.minValue;
+
+            element.minValue = newMin;
+            element.secValue = newSec;
+            element.timerId = timerId;
+          }
+          return element;
+        }),
+      }));
+      return timerId;
+    }, 1000);
+  }
+
   filteredItems() {
     const { todoData, filter } = this.state;
     return todoData.filter(({ done }) => {
@@ -92,6 +154,8 @@ export default class TodoApp extends React.Component {
             onDeleted={this.deleteItem.bind(this)}
             onToggleDone={this.onToggleDone.bind(this)}
             todos={this.filteredItems()}
+            tickTimer={this.tickTimer.bind(this)}
+            stopTimer={this.stopTimer.bind(this)}
           />
           <Footer
             done={todoCount}

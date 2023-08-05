@@ -6,10 +6,7 @@ import PropTypes from "prop-types";
 export default class Task extends React.Component {
   state = {
     editing: false,
-    min: this.props.todo.min,
-    sec: this.props.todo.sec,
     value: "",
-    timerId: "",
   };
   inputRef = React.createRef();
 
@@ -51,11 +48,6 @@ export default class Task extends React.Component {
     document.removeEventListener("mousedown", this.handleClickOutside);
   }
 
-  stopTimer() {
-    clearInterval(this.state.timerId);
-    this.setState(() => ({ timerId: "" }));
-  }
-
   render() {
     const { id, label, done, date } = this.props.todo;
     const { onDeleted, onToggleDone } = this.props;
@@ -78,53 +70,19 @@ export default class Task extends React.Component {
               <button
                 className="icon icon-play"
                 onClick={() => {
-                  if (this.props.todo.done || this.state.timerId) return;
-
-                  const timer = setInterval(() => {
-                    if (this.props.todo.done) {
-                      this.stopTimer();
-                      return;
-                    }
-
-                    const secMinusOne = this.state.sec - 1;
-                    const minMinusOne = this.state.min - 1;
-
-                    let newSec =
-                      secMinusOne < 10 && secMinusOne >= 0
-                        ? `0${secMinusOne}`
-                        : secMinusOne;
-
-                    if (newSec < 0 && this.state.min > 0) newSec = 59;
-
-                    if (this.state.min == 0 && newSec < 0) {
-                      this.stopTimer();
-                      return;
-                    }
-
-                    let newMin =
-                      newSec === 59
-                        ? minMinusOne < 10 && minMinusOne >= 0
-                          ? `0${minMinusOne}`
-                          : minMinusOne
-                        : this.state.min;
-
-                    this.setState(() => ({
-                      sec: newSec,
-                      min: newMin,
-                    }));
-                  }, 1000);
-                  this.setState(() => ({ timerId: timer }));
+                  if (this.props.todo.done || this.props.timerId) return;
+                  this.props.tickTimer(id);
                 }}
               ></button>
               <button
                 className="icon icon-pause"
                 onClick={() => {
                   if (!this.props.todo.done) {
-                    this.stopTimer();
+                    this.props.stopTimer(id, this.props.timerId);
                   }
                 }}
               ></button>
-              <span className="new-todo-form__timer">{`${this.state.min}:${this.state.sec}`}</span>
+              <span className="new-todo-form__timer">{`${this.props.minValue}:${this.props.secValue}`}</span>
             </span>
             <span className="description">
               {`created ${formatDistanceToNow(date, {
@@ -176,6 +134,11 @@ Task.propTypes = {
   onDeleted: PropTypes.func.isRequired,
   onToggleDone: PropTypes.func.isRequired,
   editItem: PropTypes.func.isRequired,
+  minValue: PropTypes.string,
+  secValue: PropTypes.string,
+  tickTimer: PropTypes.func,
+  stopTimer: PropTypes.func,
+  timerId: PropTypes.number,
 };
 
 Task.defaultProps = {
