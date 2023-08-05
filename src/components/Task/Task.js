@@ -11,6 +11,8 @@ export default class Task extends React.Component {
     value: "",
     timerId: "",
   };
+  inputRef = React.createRef();
+
   handleSubmit(event) {
     event.preventDefault();
     const {
@@ -20,6 +22,33 @@ export default class Task extends React.Component {
     editItem(id, this.state.value);
     this.setState({ value: "" });
     this.setState({ editing: false });
+  }
+
+  handleEscPress = (event) => {
+    if (event.key === "Escape" && this.state.editing) {
+      event.preventDefault();
+      this.setState(() => ({ editing: false }));
+    }
+  };
+
+  handleClickOutside = (event) => {
+    if (
+      this.inputRef.current &&
+      !this.inputRef.current.contains(event.target) &&
+      this.state.editing
+    ) {
+      this.setState(() => ({ editing: false }));
+    }
+  };
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleEscPress);
+    document.addEventListener("mousedown", this.handleClickOutside);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.handleEscPress);
+    document.removeEventListener("mousedown", this.handleClickOutside);
   }
 
   stopTimer() {
@@ -123,6 +152,7 @@ export default class Task extends React.Component {
               type="text"
               className="edit"
               value={this.state.value}
+              ref={this.inputRef}
             />
           </form>
         )}
